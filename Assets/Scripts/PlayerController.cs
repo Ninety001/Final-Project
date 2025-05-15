@@ -19,7 +19,16 @@ public class PlayerController : MonoBehaviour
     private AudioSource playerAudio;
 
     public bool gameOver = false;
-
+    private int coinCount = 0;
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Coin"))
+        {
+            coinCount++;
+            UIManager.Instance.UpdateCoinText(coinCount); 
+            Destroy(other.gameObject);
+        }
+    }
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -69,6 +78,8 @@ public class PlayerController : MonoBehaviour
             playerAudio.PlayOneShot(crashSfx);
             HighScoreManager.Instance.GameOver();
         }
+
+
     }
 
 }

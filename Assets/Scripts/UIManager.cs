@@ -1,13 +1,26 @@
 ﻿using UnityEngine;
 using TMPro;
 
-public class UIManager : MonoBehaviour  
+public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance;
+
     public TextMeshProUGUI distanceText;
     public TextMeshProUGUI highScoreText;
+    public TextMeshProUGUI coinText;
     public GameObject newHighScoreText;
 
-    private bool showNewHighScore = false;
+    private bool shownNewHighScore = false;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    public void UpdateCoinText(int count)
+    {
+        coinText.text = $"Coins: {count}";
+    }
 
     void Update()
     {
@@ -18,12 +31,12 @@ public class UIManager : MonoBehaviour
 
             distanceText.text = $"Distance: {distance:F2} m";
             highScoreText.text = $"High Score: {highScore:F2} m";
-        }
 
-        if (!showNewHighScore && HighScoreManager.Instance.isNewHighScore && HighScoreManager.Instance.isGameOver)
-        {
-            newHighScoreText.SetActive(true);
-            showNewHighScore = true;
+            if (!shownNewHighScore && HighScoreManager.Instance.isNewHighScore && HighScoreManager.Instance.isGameOver)
+            {
+                newHighScoreText.SetActive(true);
+                shownNewHighScore = true;
+            }
         }
     }
 }
