@@ -67,6 +67,7 @@ public class PlayerController : MonoBehaviour
             explosionParticle.Play();
             dirtParticle.Stop();
             playerAudio.PlayOneShot(crashSfx);
+            HighScoreManager.Instance.GameOver();
         }
     }
 
