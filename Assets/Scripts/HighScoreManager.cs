@@ -2,8 +2,10 @@
 
 public class HighScoreManager : MonoBehaviour
 {
+
     public bool isNewHighScore = false;
     public static HighScoreManager Instance;
+
     public bool isGameOver = false;
 
     public float distance = 0f;
@@ -24,6 +26,39 @@ public class HighScoreManager : MonoBehaviour
         
     }
 
+    public int coinCount = 0;
+
+    public void AddCoin()
+    {
+        coinCount++;
+        UIManager.Instance.UpdateCoinText(coinCount);
+    }
+
+   
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            HighScoreManager.Instance.AddCoin();
+            Destroy(gameObject);
+        }
+    }
+
+    public void ResetGame()
+    {
+        distance = 0f;
+        isGameOver = false;
+        isNewHighScore = false;
+    }
+
+    public void ResetStats()
+    {
+        distance = 0;
+        isGameOver = false;
+        isNewHighScore = false;
+    }
+
     void Update()
     {
         if (!gameOver)
@@ -33,10 +68,13 @@ public class HighScoreManager : MonoBehaviour
         }
     }
 
+
     public void GameOver()
     {
         isGameOver = true;
         gameOver = true;
+        UIManager.Instance.ShowGameOver();
+
 
         if (distance > highDistance)
         {

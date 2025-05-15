@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class UIManager : MonoBehaviour
 {
@@ -15,8 +17,12 @@ public class UIManager : MonoBehaviour
     public GameObject gameOverPanel;
     public GameObject historyPanel;
     public GameObject optionPanel;
+    public GameObject gamePanel;
+    public TextMeshProUGUI historyText;
+
 
     public Toggle musicToggle;
+    public static bool isRestarting = false;
 
     private bool shownNewHighScore = false;
 
@@ -27,8 +33,40 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        ShowMainMenu();
+        if (isRestarting)
+        {
+           
+            gamePanel.SetActive(true);
+            mainMenuPanel.SetActive(false);
+            Time.timeScale = 1f;
+
+            isRestarting = false;
+        }
+        else
+        {
+           
+            ShowMainMenu();
+        }
+
         musicToggle.onValueChanged.AddListener(ToggleMusic);
+        distanceText.gameObject.SetActive(false);
+        highScoreText.gameObject.SetActive(false);
+    }
+
+    public void StartGame()
+    {
+        mainMenuPanel.SetActive(false);
+        gamePanel.SetActive(true);
+        gameOverPanel.SetActive(false);
+
+        distanceText.gameObject.SetActive(true);
+        highScoreText.gameObject.SetActive(true);
+
+        PlayerController player = GameObject.Find("Player").GetComponent<PlayerController>();
+        player.ResetPlayer();
+        player.isGameStarted = true;
+
+        Time.timeScale = 1f;
     }
 
     public void ShowMainMenu()
@@ -37,9 +75,24 @@ public class UIManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         historyPanel.SetActive(false);
         optionPanel.SetActive(false);
+        Time.timeScale = 0f;
     }
 
-    public void ShowHistory() { mainMenuPanel.SetActive(false); historyPanel.SetActive(true); }
+    public void ShowHistory() 
+    {
+        mainMenuPanel.SetActive(false);
+        historyPanel.SetActive(true);
+
+        List<PlayHistoryManager.PlayRecord> history = PlayHistoryManager.Instance.GetHistory();
+
+        string result = "Play History:\n";
+        for (int i = 0; i < history.Count; i++)
+        {
+            result += $"#{i + 1} - Distance: {history[i].distance:F2} m, Coins: {history[i].coins}\n";
+        }
+
+        historyText.text = result;
+    }
 
     public void ShowOption()
     {
@@ -59,6 +112,25 @@ public class UIManager : MonoBehaviour
     }
 
     public void ReturnToMenu() => ShowMainMenu();
+
+    public void ShowGameOver()
+    {
+        gameOverPanel.SetActive(true);
+        Time.timeScale = 0f;
+
+    }
+
+    public void RestartGame()
+    {
+        isRestarting = true;
+        Time.timeScale = 1f;
+        gameOverPanel.SetActive(false);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    
+
+
 
     void Update()
     {
